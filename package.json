@@ -1,0 +1,35 @@
+{
+  "name": "journal",
+  "version": "0.0.1",
+  "description": "demo",
+  "author": "Abhay Vatsa <avatsa88@gmail.com>",
+  "contributors": [
+    {
+      "name": "Abhay Vatsa",
+      "email": "avatsa88@gmail.com"
+    }
+  ],
+  "dependencies": {
+    "body-parser": "^1.12.4",
+    "cldr-data": "^28.0.2",
+    "express": "^4.12.3",
+    "globalize": "^1.1.0-rc.5",
+    "jquery": "^2.1.4",
+    "moment": "^2.10.6",
+    "mongodb": "*",
+    "monk": "*",
+    "react": "*",
+    "react-bootstrap": "*",
+    "react-date-picker": "*",
+    "react-datepicker": "*",
+    "react-router": "*",
+    "react-widgets": "^3.0.0",
+    "react-widgets-moment-localizer": "^1.0.1",
+    "request": "^2.65.0"
+  },
+  "devDependencies": {
+    "browserify": "^10.2.0",
+    "reactify": "^1.1.1",
+    "uglify-js": "^2.4.22"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "_id": "555ab59c388e77da1cd0e464",
+  "dateTime": 1432008092063,
+  "text": "Adding some documentation to project"
+},
+{
+  "_id": "5559eae27df7a0f9029ce7c9",
+  "dateTime": 1431956194501,
+  "text": "Monday is my favorite day!"
+},
+{
+  "_id": "55597a03b8b79eca19528894",
+  "dateTime": 1431927299448,
+  "text": "Practiced some guitar today, and went on a bike ride. Minuteman bike path is always great."
+},
+{
+  "_id": "555978861b1af193191fe8bf",
+  "dateTime": 1431862118373,
+  "text": "Populating this journal with random entries is tiring, but I automated most of it."
+},
+{
+  "_id": "5559783f1b1af193191fe8be",
+  "dateTime": 1431689247432,
+  "text": "Building out some stuff in React, curious to try out server side rendering."
+},
+{
+  "_id": "555978101b1af193191fe8bc",
+  "dateTime": 1431595600004,
+  "text": "Read Hitchhiker's Guide to Galaxy for a second time. Great book!"
+},
+{
+  "_id": "555977cc1b1af193191fe8ba",
+  "dateTime": 1431347132153,
+  "text": "Today, I feel like doing nothing! Nothing at all - Bruno Mars."
+},
+{
+  "_id": "5559782a1b1af193191fe8bd",
+  "dateTime": 1430825226437,
+  "text": "Cooked a great meal with the family! Pasta a la vatsa!"
+},
+{
+  "_id": "555979a31b1af193191fe8c0",
+  "dateTime": 1430807603994,
+  "text": "Mostly done with this react demo app."
+}
