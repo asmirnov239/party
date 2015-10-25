@@ -21,33 +21,17 @@ app.use('/node_modules', express.static(__dirname + '/node_modules'));
 
 // REST API for notification
 app.use('/api/notify', function (req, res) {
+    // match loggedTime with db and use that element to send a text
     db.get('parties').find({
-        "loggedTime": 1445748965839
+        loggedTime: parseInt(req.body.id)
     }, function (err, docs) {
         if (err) {
             throw err;
         }
-        var message= "Hi " + docs[0].name + ". An anonymous complaint has been make about the noise level at your party. Please notify any parties at your residence of this warning.";
-
+        var message= "Hello " + docs[0].name + ". An anonymous complaint has been made about the noise level at your party. Please notify any parties at your residence of this warning.";
         sendText(docs[0].number, message);
-
     });
-    console.log('tried');
-    // db.get('parties').insert({
-    //     "loggedTime": Date.now(),
-    //     "name": req.body.name,
-    //     "location": req.body.location,
-    //     "latitude": null,
-    //     "longitude": null,
-    //     "number": req.body.number,
-    //     "startTime": req.body.startTime,
-    //     "endTime": req.body.endTime
-    // }, function (err, doc) {
-    //     if (err) {
-    //         throw err;
-    //     }
-    //     res.json({});
-    // });
+    res.end();
 });
 
 

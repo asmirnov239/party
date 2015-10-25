@@ -203,6 +203,7 @@ var Parties = React.createClass({displayName: "Parties",
     },
     componentDidMount:function() {
         $.ajax({
+            method: "POST",
             url: "/api/getparties",
             dataType: 'json',
             cache: false,
@@ -213,9 +214,11 @@ var Parties = React.createClass({displayName: "Parties",
                 this.setState({data: data, message: this.state.message});
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
+                console.error(status, err.toString());
             }.bind(this)
         });
+
+
     },
 	render:function() {
         var notify = function (id) {
@@ -223,25 +226,26 @@ var Parties = React.createClass({displayName: "Parties",
                 url: "/api/notify",
                 dataType: 'json',
                 cache: false,
+                type: "POST",
                 data: {"id": id},
                 success: function (data) {
                     alert("success");
                 }.bind(this),
                 error: function (xhr, status, err) {
-                    console.error(this.props.url, status, err.toString());
+                    console.error(status, err.toString());
                 }.bind(this)
             });
-            console.log("sent " + id);
         };
         var self = this;
         var key = -1;
         var entries = this.state.data.map(function (element){
             //var date = self.parseDate(entry.dateTime);
+            console.log(element);
             return (
                 React.createElement(BS.Panel, {key: key++, header: "", bsStyle: "primary"}, 
                     React.createElement("span", null, element.location), 
                     React.createElement("span", {className: "notify-noise-complaint-button"}, 
-                        React.createElement(BS.Button, {onClick: notify.bind(this,"1445748965839"), bsStyle: "primary"}, "Make Noise Complaint")
+                        React.createElement(BS.Button, {onClick: notify.bind(this, element.loggedTime), bsStyle: "primary"}, "Make Noise Complaint")
                     )
                 )
             );
