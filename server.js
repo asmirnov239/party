@@ -12,8 +12,6 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-
-
 app.use('/', express.static(__dirname + '/'));
 app.use('/bs', express.static(__dirname + '/lib/bootstrap-3.3.4-dist/css'));
 app.use('/fonts', express.static(__dirname + '/lib/bootstrap-3.3.4-dist/fonts'));
@@ -36,11 +34,15 @@ app.use('/api/notify', function (req, res) {
 
 
 app.use('/api/getparties', function (req, res) {
-    db.get('parties').find({}, {
-        sort: {
-            startTime: -1
-        }
-    }, function (err, docs) {
+    var today = new Date;
+    string_date = today.getMonth() + "/" + today.getDate() + "/" + today.getFullYear();
+    var query = { 
+        $or: [
+            {"startTime": new RegExp('^' + string_date)}, 
+            {"endTime": new RegExp('^' + string_date)}
+        ] 
+    };
+    db.get('parties').find(query, function (err, docs) {
         res.json(docs);
     });
 });

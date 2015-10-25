@@ -3,6 +3,8 @@ var BS = require('react-bootstrap');
 var title = "Parties near by";
 var $ = require('jquery');
 
+
+
 var Parties = React.createClass({
     getInitialState() {
         document.title = title;
@@ -16,23 +18,31 @@ var Parties = React.createClass({
         return (d.getMonth() + 1) + "." + d.getDate() + "." + d.getYear() % 100 + " @ " + d.getHours() + ":" + d.getMinutes();
     },
     componentDidMount() {
-        $.ajax({
-            method: "POST",
-            url: "/api/getparties",
-            dataType: 'json',
-            cache: false,
-            success: function (data) {
-                if (data.length === 0) {
-                    this.state.message = "No parties nearby. For complaints please coordinate with local law enforcement.";
-                }
-                this.setState({data: data, message: this.state.message});
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(status, err.toString());
-            }.bind(this)
+        var self = this;
+        navigator.geolocation.getCurrentPosition(function(geoposition){
+            getParties(geoposition.coords.longitude, geoposition.coords.latitude); 
         });
-
-
+        function getParties(latitude, longitude) {
+            $.ajax({
+                method: "POST",
+                url: "/api/getparties",
+                dataType: 'json',
+                data: {
+                    latitude: latitude,
+                    longitude: longitude
+                },
+                cache: false,
+                success: function (data) {
+                    if (data.length === 0) {
+                        self.state.message = "No parties nearby. For complaints please coordinate with local law enforcement.";
+                    }
+                    self.setState({data: data, message: self.state.message});
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(status, err.toString());
+                }.bind(this)
+            });
+        }
     },
 	render() {
         var notify = function (id) {
