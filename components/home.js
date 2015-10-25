@@ -28,8 +28,10 @@ function roundMinutes(date, plusMinutes) {
     return date;
 }
 
-var validateData = function (data) {
+var validate = function (data) {
     // check name
+    // check 
+    return true;
 }
 var Home = React.createClass({
     getInitialState() {
@@ -60,7 +62,7 @@ var Home = React.createClass({
             $.ajax({
                 type: "POST",
                 url: "/api/registerParty",
-                data: state,
+                data: data,
                 success: function () {
                     alert('success');
                     self.setState(self.getInitialState);

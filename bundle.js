@@ -76,8 +76,10 @@ function roundMinutes(date, plusMinutes) {
     return date;
 }
 
-var validateData = function (data) {
+var validate = function (data) {
     // check name
+    // check 
+    return true;
 }
 var Home = React.createClass({displayName: "Home",
     getInitialState:function() {
@@ -108,7 +110,7 @@ var Home = React.createClass({displayName: "Home",
             $.ajax({
                 type: "POST",
                 url: "/api/registerParty",
-                data: state,
+                data: data,
                 success: function () {
                     alert('success');
                     self.setState(self.getInitialState);
@@ -216,13 +218,31 @@ var Parties = React.createClass({displayName: "Parties",
         });
     },
 	render:function() {
+        var notify = function (id) {
+            $.ajax({
+                url: "/api/notify",
+                dataType: 'json',
+                cache: false,
+                data: {"id": id},
+                success: function (data) {
+                    alert("success");
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.props.url, status, err.toString());
+                }.bind(this)
+            });
+            console.log("sent " + id);
+        };
         var self = this;
         var key = -1;
-        var entries = this.state.data.map(function (entry){
+        var entries = this.state.data.map(function (element){
             //var date = self.parseDate(entry.dateTime);
             return (
-                React.createElement(BS.Panel, {key: key++, header: date, bsStyle: "primary"}, 
-                    React.createElement("p", null, entry.location)
+                React.createElement(BS.Panel, {key: key++, header: "", bsStyle: "primary"}, 
+                    React.createElement("span", null, element.location), 
+                    React.createElement("span", {className: "notify-noise-complaint-button"}, 
+                        React.createElement(BS.Button, {onClick: notify.bind(this,"1445748965839"), bsStyle: "primary"}, "Make Noise Complaint")
+                    )
                 )
             );
         });

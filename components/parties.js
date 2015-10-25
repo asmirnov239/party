@@ -32,13 +32,31 @@ var Parties = React.createClass({
         });
     },
 	render() {
+        var notify = function (id) {
+            $.ajax({
+                url: "/api/notify",
+                dataType: 'json',
+                cache: false,
+                data: {"id": id},
+                success: function (data) {
+                    alert("success");
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.props.url, status, err.toString());
+                }.bind(this)
+            });
+            console.log("sent " + id);
+        };
         var self = this;
         var key = -1;
-        var entries = this.state.data.map(function (entry){
+        var entries = this.state.data.map(function (element){
             //var date = self.parseDate(entry.dateTime);
             return (
-                <BS.Panel key={key++} header={date} bsStyle='primary'>
-                    <p>{entry.location}</p>
+                <BS.Panel key={key++} header={""} bsStyle='primary'>
+                    <span>{element.location}</span>
+                    <span className="notify-noise-complaint-button">
+                        <BS.Button onClick={notify.bind(this,"1445748965839")} bsStyle="primary">Make Noise Complaint</BS.Button>
+                    </span>
                 </BS.Panel>
             );
         });
