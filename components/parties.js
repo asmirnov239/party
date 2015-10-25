@@ -1,13 +1,14 @@
 var React = require('react');
 var BS = require('react-bootstrap');
-var title = "Previous Entries";
+var title = "Parties near by";
 var $ = require('jquery');
+
 var Parties = React.createClass({
     getInitialState() {
         document.title = title;
         return {
             data: [],
-            message : "Loading your entries..."
+            message : "Searching nearby..."
         };
     },
     parseDate(dateStr) {
@@ -16,12 +17,12 @@ var Parties = React.createClass({
     },
     componentDidMount() {
         $.ajax({
-            url: "/api/getentries",
+            url: "/api/getparties",
             dataType: 'json',
             cache: false,
             success: function (data) {
                 if (data.length === 0) {
-                    this.state.message = <p>No entries available, try posting one!</p>;
+                    this.state.message = "No parties nearby. For complaints please coordinate with local law enforcement.";
                 }
                 this.setState({data: data, message: this.state.message});
             }.bind(this),
@@ -34,10 +35,10 @@ var Parties = React.createClass({
         var self = this;
         var key = -1;
         var entries = this.state.data.map(function (entry){
-            var date = self.parseDate(entry.dateTime);
+            //var date = self.parseDate(entry.dateTime);
             return (
                 <BS.Panel key={key++} header={date} bsStyle='primary'>
-                    <p>{entry.text}</p>    
+                    <p>{entry.location}</p>
                 </BS.Panel>
             );
         });

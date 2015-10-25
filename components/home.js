@@ -1,14 +1,13 @@
 var React = require('react');
 var BS = require('react-bootstrap');
-var title = "Party Registration";
-
+var title = "Off Campus Party Registration";
 var $ = require('jquery');
-
 var DateTimePicker = require('react-widgets').DateTimePicker
 var ReactWidgets = require('react-widgets');
+
+// Localization library used by datepicker
 var Globalize = require('globalize')
 var globalizeLocalizer = require('../node_modules/react-widgets/lib/localizers/globalize')
-
 Globalize.load(
   require( "cldr-data/main/en/ca-gregorian" ),
   require( "cldr-data/supplemental/likelySubtags" ),
@@ -23,38 +22,66 @@ Globalize.locale('en');
 globalizeLocalizer(Globalize);
 
 function roundMinutes(date, plusMinutes) {
-
     date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
-
     date.setMinutes((plusMinutes) ? plusMinutes : 0);
     date.setSeconds(0);
     return date;
 }
 
+var validateData = function (data) {
+    // check name
+}
 var Home = React.createClass({
     getInitialState() {
         document.title = title;
-        return {};
+        return {
+            startTime: this.props.startTime,
+            endTime: this.props.endTime
+        };
+    },
+    getDefaultProps() {
+        return {
+            startTime: roundMinutes(new Date()),
+            endTime: roundMinutes(new Date(), 120)
+        }
     },
     saveEntry() {
-        //var data = this.refs.number.getValue();
-        //var inputNode = this.refs.number.getInputDOMNode();
-        $.ajax({
-            type: "POST",
-            url: "/api/registerParty",
-            data: {'entry': 5},
-            success: function () {
-                alert('success');
-                //inputNode.value = "";
-            },
-            error: function(xhr, status, err) {
-                console.error(status, err.toString());
-            },
-            dataType: 'json'
-        });        
+        var data = {};
+        for (prop in this.state) {
+            // we transform the date objects to string
+            if (typeof this.state[prop] == "string") {
+                data[prop] = this.state[prop];
+            } else {
+                data[prop] = this.state[prop].toLocaleString();
+            }
+        }
+        if (validate(data)) {
+            var self = this;
+            $.ajax({
+                type: "POST",
+                url: "/api/registerParty",
+                data: state,
+                success: function () {
+                    alert('success');
+                    self.setState(self.getInitialState);
+                },
+                error: function(xhr, status, err) {
+                    console.error(status, err.toString());
+                },
+                dataType: 'json'
+            });       
+        }
+ 
     },
-    updateForm (e) {
-        alert('hi');
+    updateForm (property, e) {
+        var value;
+        if (e.target) {
+            value = e.target.value;
+        } else {
+            value = e;
+        }
+        this.state[property] = value;
+        this.setState(this.state);
     },
     render() {
       return (
@@ -63,14 +90,14 @@ var Home = React.createClass({
                 <BS.Row className='show-grid'>
                     <BS.Panel header={title} bsStyle='primary'>
                         <form className="form-horizontal">
-                            <BS.Input type="text" label="Name" labelClassName="col-xs-2" wrapperClassName="col-xs-10" onChange={this.updateForm} />
-                            <BS.Input type="text" label="Location" labelClassName="col-xs-2" wrapperClassName="col-xs-10" onChange={this.updateForm}/>
-                            <BS.Input type="text" label="Phone Number" labelClassName="col-xs-2" wrapperClassName="col-xs-10" onChange={this.updateForm}/>
+                            <BS.Input type="text" label="Name" labelClassName="col-xs-2" wrapperClassName="col-xs-10" value={this.state.name} onChange={this.updateForm.bind(null,"name")} />
+                            <BS.Input type="text" label="Address" labelClassName="col-xs-2" wrapperClassName="col-xs-10" value={this.state.location} onChange={this.updateForm.bind(null,"location")}/>
+                            <BS.Input type="text" label="Phone Number" labelClassName="col-xs-2" wrapperClassName="col-xs-10" value={this.state.number} onChange={this.updateForm.bind(null,"number")}/>
                             <BS.Input label="Start Time" labelClassName="col-xs-2" wrapperClassName="col-xs-10" >
-                                <DateTimePicker defaultValue={roundMinutes(new Date())} onChange={this.updateForm} />
+                                <DateTimePicker defaultValue={this.props.startTime} onChange={this.updateForm.bind(null,"startTime")} />
                             </BS.Input>
                             <BS.Input label="End Time" labelClassName="col-xs-2" wrapperClassName="col-xs-10" >
-                                <DateTimePicker defaultValue={roundMinutes(new Date(),120)} onChange={this.updateForm} />
+                                <DateTimePicker defaultValue={this.props.endTime} onChange={this.updateForm.bind(null,"endTime")} />
                             </BS.Input>
                         </form>
                         <BS.Button onClick={this.saveEntry} bsStyle='primary' bsSize='large' block>Submit</BS.Button>

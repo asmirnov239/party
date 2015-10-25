@@ -25,7 +25,9 @@
     "react-router": "*",
     "react-widgets": "^3.0.0",
     "react-widgets-moment-localizer": "^1.0.1",
-    "request": "^2.65.0"
+    "request": "^2.65.0",
+    "textbelt": "0.0.2",
+    "twilio": "^2.5.1"
   },
   "devDependencies": {
     "browserify": "^10.2.0",
