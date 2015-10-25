@@ -2,9 +2,12 @@ var express = require('express');
 var app = express();
 var mongo = require('mongodb');
 var monk = require('monk');
+var http = require('http');
 var db = monk('localhost:27017/ocpartyreg');
 var bodyParser = require('body-parser');
 var port = 3000;
+var max_distance = 150*0.3048; //metres
+
 
 app.use(bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({
@@ -35,7 +38,7 @@ app.use('/api/notify', function (req, res) {
 
 app.use('/api/getparties', function (req, res) {
     var today = new Date;
-    string_date = today.getMonth() + "/" + today.getDate() + "/" + today.getFullYear();
+    string_date = (today.getMonth()+1) + "/" + today.getDate() + "/" + today.getFullYear();
     var query = { 
         $or: [
             {"startTime": new RegExp('^' + string_date)}, 
@@ -43,7 +46,7 @@ app.use('/api/getparties', function (req, res) {
         ] 
     };
     db.get('parties').find(query, function (err, docs) {
-        res.json(docs);
+		res.json(docs.filter(function(el) { return locations_within_distance(el.latitude, el.longitude, req.body.latitude, req.body.longitude);}));
     });
 });
 
@@ -51,14 +54,12 @@ app.use('/api/getparties', function (req, res) {
 app.post('/api/registerParty', function (req, res) {
     var message= "Hi there " + req.body.name.split()[0] + "! Thanks for registering your party. You will be notified at this number of any noise complaints.";
     
-    var coord = getCoordinates(req.body.location);
+    
     var loggedTime = Date.now();
     db.get('parties').insert({
         "loggedTime": loggedTime,
         "name": req.body.name,
         "location": req.body.location,
-        "latitude": coord.latitude,
-        "longitude": coord.longitude,
         "number": req.body.number,
         "startTime": req.body.startTime,
         "endTime": req.body.endTime
@@ -68,11 +69,12 @@ app.post('/api/registerParty', function (req, res) {
         }
         res.json({});
     });
+	setCoordinates(req.body.location, loggedTime);
 
    sendText(req.body.number, message);
 });
 
-function getCoordinates(address){
+function setCoordinates(address, loggedTime){
     // address should be a non formatted address string
     url = "http://maps.googleapis.com/maps/api/geocode/json?address=" + address;
     var request = http.get(url, function(res) {
@@ -80,10 +82,13 @@ function getCoordinates(address){
         res.on('data', function (chunk) {
             data += chunk;
         });
-        return {
-            latitude: json.results[0].geometry.location.lat,
-            longitude: json.results[0].geometry.location.lng 
-        };
+		res.on('end', function(){
+			var json = JSON.parse(data);
+			db.get('parties').update(
+				{ "loggedTime" : loggedTime },
+				{$set: {"latitude": json.results[0].geometry.location.lat, "longitude": json.results[0].geometry.location.lng }  }
+			);	
+        });			
     });
 };
 
@@ -132,3 +137,25 @@ var sendText = function (number, message) {
                 }
             });
      }
+	 
+
+function toRadians(degrees){
+    return degrees * Math.PI / 180;
+}
+
+function distance_between_coordinates(lat1, lon1, lat2, lon2){
+  var earth_radius = 6371000; // metres
+  //using Haversine formula calculates distance between geographic coordinate
+  var phi1 = toRadians(lat1);
+  var phi2 = toRadians(lat2);
+  var deltaPhi = toRadians(lat2 - lat1);
+  var deltaLambda = toRadians(lon2 - lon1);
+  var haverSin = Math.pow(Math.sin(deltaPhi/2), 2) + Math.cos(phi1)*Math.cos(phi2)* Math.pow(Math.sin(deltaLambda/2), 2);
+  var distance = 2*earth_radius* Math.atan2(Math.sqrt(haverSin), Math.sqrt(1-haverSin));
+  return distance;
+}
+
+function locations_within_distance(lat1, lon1, lat2, lon2){
+  var distance = distance_between_coordinates(lat1, lon1, lat2, lon2);
+  return distance<max_distance;
+}

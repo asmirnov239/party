@@ -206,7 +206,7 @@ var Parties = React.createClass({displayName: "Parties",
     componentDidMount:function() {
         var self = this;
         navigator.geolocation.getCurrentPosition(function(geoposition){
-            getParties(geoposition.coords.longitude, geoposition.coords.latitude); 
+            getParties(geoposition.coords.latitude, geoposition.coords.longitude); 
         });
         function getParties(latitude, longitude) {
             $.ajax({
